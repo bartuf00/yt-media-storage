@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  build-linux:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -35,4 +35,35 @@ jobs:
         run: cmake -B build -S .
 
       - name: Build
+        run: cmake --build build --parallel 2
+
+  build-windows:
+    runs-on: windows-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup MSYS2
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: >-
+            mingw-w64-x86_64-toolchain
+            mingw-w64-x86_64-cmake
+            mingw-w64-x86_64-ninja
+            mingw-w64-x86_64-pkgconf
+            mingw-w64-x86_64-qt6-base
+            mingw-w64-x86_64-ffmpeg
+            mingw-w64-x86_64-libsodium
+
+      - name: Configure
+        shell: msys2 {0}
+        run: cmake -B build -S . -G Ninja
+
+      - name: Build
+        shell: msys2 {0}
         run: cmake --build build --parallel 2
