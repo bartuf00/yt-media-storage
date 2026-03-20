@@ -8,6 +8,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     steps:
       - name: Checkout repository
@@ -33,4 +35,4 @@ jobs:
         run: cmake -B build -S .
 
       - name: Build
-        run: cmake --build build --parallel
+        run: cmake --build build --parallel 2
