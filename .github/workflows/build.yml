@@ -32,7 +32,7 @@ jobs:
             libomp-dev
 
       - name: Configure
-        run: cmake -B build -S .
+        run: cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
 
       - name: Build
         run: cmake --build build --parallel 2
@@ -72,7 +72,7 @@ jobs:
 
       - name: Configure
         shell: msys2 {0}
-        run: cmake -B build -S . -G Ninja
+        run: cmake -B build -S . -G Ninja -DCMAKE_BUILD_TYPE=Release
 
       - name: Build
         shell: msys2 {0}
@@ -110,9 +110,15 @@ jobs:
           name: windows-build
           path: artifacts/windows
 
+      - name: Archive artifacts
+        run: |
+          mkdir -p dist
+          tar -czf dist/linux-build.tar.gz -C artifacts/linux .
+          tar -czf dist/windows-build.tar.gz -C artifacts/windows .
+
       - name: Create release
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            artifacts/linux/*
-            artifacts/windows/*
+            dist/linux-build.tar.gz
+            dist/windows-build.tar.gz
